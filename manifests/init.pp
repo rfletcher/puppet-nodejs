@@ -31,6 +31,8 @@ class nodejs(
           include_src => false,
           before      => Anchor['nodejs::repo'],
         }
+
+        Class['apt::update'] -> Package['nodejs']
       }
     }
 
@@ -38,16 +40,19 @@ class nodejs(
       if $manage_repo {
         # Only add apt source if we're managing the repo
         include 'apt'
+
         # Only use PPA when necessary.
         apt::ppa { 'ppa:chris-lea/node.js':
           before => Anchor['nodejs::repo'],
         }
 
         if $dev_package {
-            apt::ppa { 'ppa:chris-lea/node.js-devel':
-              before => Anchor['nodejs::repo'],
-            }
+          apt::ppa { 'ppa:chris-lea/node.js-devel':
+            before => Anchor['nodejs::repo'],
+          }
         }
+
+        Class['apt::update'] -> Package['nodejs']
       }
     }
 
@@ -99,9 +104,15 @@ class nodejs(
     'Ubuntu': {
       # The PPA we are using on Ubuntu includes NPM in the nodejs package, hence
       # we must not install it separately
+      $manage_npm_package = $::lsbdistcodename ? {
+        'trusty' => false,
+        default  => $manage_repo ? { false => true, default => false },
+      }
     }
 
     'Gentoo': {
+      $manage_npm_package = false
+
       # Gentoo installes npm with the nodejs package when configured properly.
       # We use the gentoo/portage module since it is expected to be
       # available on all gentoo installs.
@@ -113,11 +124,18 @@ class nodejs(
     }
 
     default: {
-      package { 'npm':
-        name    => $nodejs::params::npm_pkg,
-        ensure  => present,
-        require => Anchor['nodejs::repo']
-      }
+      $manage_npm_package = true
+    }
+  }
+
+  if $manage_npm_package {
+    package { 'npm':
+      name    => $nodejs::params::npm_pkg,
+      ensure  => present,
+      require => [
+        Anchor['nodejs::repo'],
+        Package['nodejs'],
+      ],
     }
   }
 

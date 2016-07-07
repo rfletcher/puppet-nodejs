@@ -17,7 +17,7 @@ class nodejs::modules::karma (
     ensure   => $ensure,
     provider => 'npm',
     require  => Class['::nodejs'],
-  }  
+  }
 
   # annoyingly, karma doesn't link itself into the path like other npm modules
   if $ensure == 'present' {

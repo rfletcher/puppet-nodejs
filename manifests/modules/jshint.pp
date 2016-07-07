@@ -17,5 +17,5 @@ class nodejs::modules::jshint (
     ensure   => $ensure,
     provider => 'npm',
     require  => Class['::nodejs'],
-  }  
+  }
 }

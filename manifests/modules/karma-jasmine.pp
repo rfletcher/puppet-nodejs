@@ -17,5 +17,5 @@ class nodejs::modules::karma-jasmine (
     ensure   => $ensure,
     provider => 'npm',
     require  => Class['::nodejs'],
-  }  
+  }
 }

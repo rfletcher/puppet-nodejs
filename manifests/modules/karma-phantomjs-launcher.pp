@@ -17,5 +17,5 @@ class nodejs::modules::karma-phantomjs-launcher (
     ensure   => $ensure,
     provider => 'npm',
     require  => Class['::nodejs'],
-  }  
+  }
 }
