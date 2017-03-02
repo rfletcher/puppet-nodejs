@@ -10,8 +10,6 @@ Install nodejs package and npm package provider for Debian, Ubuntu, Fedora, and 
 
 Installs nodejs and npm per [nodejs documentation](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager).
 
-* dev_package: whether to install optional dev packages. dev packages not available on all platforms, default: false.
-
 Example:
 
     include nodejs

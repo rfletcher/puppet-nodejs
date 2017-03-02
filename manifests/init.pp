@@ -9,13 +9,11 @@
 # Usage:
 #
 class nodejs(
-  $dev_package = false,
   $manage_repo = false,
   $proxy       = '',
   $version     = 'present'
 ) inherits nodejs::params {
   #input validation
-  validate_bool($dev_package)
   validate_bool($manage_repo)
 
   case $::operatingsystem {
@@ -45,12 +43,7 @@ class nodejs(
         apt::ppa { 'ppa:chris-lea/node.js':
           before => Anchor['nodejs::repo'],
         }
-
-        if $dev_package {
-          apt::ppa { 'ppa:chris-lea/node.js-devel':
-            before => Anchor['nodejs::repo'],
-          }
-        }
+      }
 
         Class['apt::update'] -> Package['nodejs']
       }
@@ -146,13 +139,4 @@ class nodejs(
       require => Package['npm'],
     }
   }
-
-  if $dev_package and $nodejs::params::dev_pkg {
-    package { 'nodejs-dev':
-      name    => $nodejs::params::dev_pkg,
-      ensure  => $version,
-      require => Anchor['nodejs::repo']
-    }
-  }
-
 }
