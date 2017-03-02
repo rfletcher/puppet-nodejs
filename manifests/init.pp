@@ -16,6 +16,11 @@ class nodejs(
   #input validation
   validate_bool($manage_repo)
 
+  $release_line = $version ? {
+    /^7/    => '7.x',
+    default => '6.x',
+  }
+
   case $::operatingsystem {
     'Debian': {
       if $manage_repo {
@@ -39,11 +44,18 @@ class nodejs(
         # Only add apt source if we're managing the repo
         include 'apt'
 
-        # Only use PPA when necessary.
-        apt::ppa { 'ppa:chris-lea/node.js':
-          before => Anchor['nodejs::repo'],
+        ::apt::key { '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280':
+          source => 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key',
+        } ->
+
+        ::apt::pin { 'nodejs':
+          originator => "Node Source",
+          priority   => 600,
+        } ->
+
+        ::apt::source { 'nodejs':
+          location => "https://deb.nodesource.com/node_${release_line}",
         }
-      }
 
         Class['apt::update'] -> Package['nodejs']
       }
