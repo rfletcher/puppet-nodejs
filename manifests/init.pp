@@ -54,7 +54,8 @@ class nodejs(
         } ->
 
         ::apt::source { 'nodejs':
-          location => "https://deb.nodesource.com/node_${release_line}",
+          location      => "https://deb.nodesource.com/node_${release_line}",
+          notify_update => true,
         }
 
         Class['apt::update'] -> Package['nodejs']
